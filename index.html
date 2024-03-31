@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+@ -48,4 +49,207 @@ const bounds = [
+
+</script>
+</body>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <title>Solar Cycles and El Nino Events</title>
     <style>
@@ -33,18 +41,169 @@ const bounds = [
 
 });
 
-                const f = d3.format(".2f")
+const f = d3.format(".2f")
+const url = "https://raw.githubusercontent.com/jxfishman/CS568-Project/main/SN_m_tot_V2%20.csv"
+             
+d3.dsv(";", url, (d) => {
+    return {
+        
+                Year: d.Year,
+                Month: d.Month,
+                sunspotNumber: +d.Mean
                 
-                d3.csv("./SN_m_tot_V2.csv").then(data=>{
-                            let s_data = data.map(d=>{
-                                    return {
-                                        Year: d[0],
-                                        Month: d[1],
-                                        sunspotNumber: +d[3]
-                                    }
-                            })
-                        })
-                            console.log(s_data)
+                       
+    }
+    
+}).then(d=>{
+
+
+    console.log(d);
+//svg for line chart
+    let svg = d3.select("body").append("svg");
+
+    const margin = 60;
+
+   /* let max0 = d[0].sunspotNumber;
+    let min0 = d[0].sunspotNumber;
+    let max = max0;
+    let min = min0;
+
+    //Identify maximum and minimum data values in data array so that axes are properly scaled for all lines
+let keys = [ 'EstimatedCost', 'ActualCost', 'SoldPrice', 'MarginOfProfit']
+for (var j = 0; j < d.length; j++)
+{
+          max = d3.max(f_data, function(d) { return +d[keys[j]];} );
+          min = d3.min(f_data, function(d) { return +d[keys[j]];} );
+          if (max > max0) max0 =  max;
+          if (min < min0) min0 =  min;                               
+}*/
+
+    let max = d3.max(d)
+    console.log(max)
+/*
+//configure axes and color
+const xScale = d3.scaleTime().domain(d3.extent(f_data, d=>d['Date'])).range([0 + margin, 1000-margin]);
+const yScale = d3.scaleLinear().domain([min0, max0]).range([800 - margin, 0 + margin]);
+
+const xAxis = d3.axisBottom().scale(xScale);
+const yAxis = d3.axisLeft().scale(yScale); 
+svg.append("g").attr("transform", `translate(0, ${800-margin})`).call(xAxis);
+svg.append("g").attr("transform", `translate(${0+margin},0)`).call(yAxis);
+let color = d3.scaleOrdinal().domain(keys).range(d3.schemeCategory10);
+
+
+//create lines from required columns
+let line1 = d3.line()
+    .x(d=>xScale(d.Date))
+    .y(d=>yScale(d.EstimatedCost))
+    
+
+let line2 = d3.line()
+    .x(d=>xScale(d.Date))
+    .y(d=>yScale(d.ActualCost))
+
+let line3 = d3.line()
+    .x(d=>xScale(d.Date))
+    .y(d=>yScale(d.SoldPrice))
+
+let line4 = d3.line()
+    .x(d=>xScale(d.Date))
+    .y(d=>yScale(d.MarginOfProfit))
+
+ //link each line to a path element on the svg   
+svg.append("path")
+    .datum(f_data) 
+    .attr("class", "line") 
+    .attr("fill", "none")
+    .attr("stroke", d3.schemeCategory10[0])
+    .attr("stroke-width", 1.5)
+    .attr("d", line1);
+
+svg.append("path")
+    .datum(f_data) 
+    .attr("class", "line") 
+    .attr("fill", "none")
+    .attr("stroke", d3.schemeCategory10[1])
+    .attr("stroke-width", 1.5)
+    .attr("d", line2);
+
+svg.append("path")
+    .datum(f_data) 
+    .attr("class", "line") 
+    .attr("fill", "none")
+    .attr("stroke", d3.schemeCategory10[2])
+    .attr("stroke-width", 1.5)
+    .attr("d", line3);
+
+svg.append("path")
+    .datum(f_data) 
+    .attr("class", "line") 
+    .attr("fill", "none")
+    .attr("stroke", d3.schemeCategory10[3])
+    .attr("stroke-width", 1.5)
+    .attr("d", line4);
+    
+   
+//create the legend
+let newKeys = [ 'Estimated Cost', 'Actual Cost', 'Sold Price', 'Margin of Profit']
+svg.selectAll('legend_lines')
+    .data(keys)
+    .enter()
+    .append('line')
+    .attr('x1', 830)
+    .attr('y1', function(d,i){ return 40 + i*25})
+    .attr('x2', 900)
+    .attr('y2', function(d,i){ return 40 + i*25})
+    .style("stroke", function(d){ return color(d)})
+    .style("stroke-width", 3);
+
+   
+svg.selectAll("legend_labels")
+    .data(newKeys)
+    .enter()
+    .append("text")
+    .attr("x", 720)
+    .attr("y", function(d,i){ return 40 + i*25}) 
+    .style("fill", d3.schemeCategory10[0])
+    .text(function(d){ return d})
+    .attr("text-anchor", "left")
+    .style("alignment-baseline", "middle");
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+})
+
+
+
+
+   let s_data = d.map(d=>{
+                return {
+                          Year: d['Year'],
+                          Month: d['Month'],
+                          sunspotNumber: +d[Mean]
+                       }
+    })
+    
+    console.log(s_data)
+
+})*/
+               
+
+})               
+                
+
+                
 
 </script>
 </body>
