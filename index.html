@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Solar Cycles and El Nino Events</title>
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; width: 50%; height: 50% }
+    </style>
+        
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://d3js.org/topojson.v1.min.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
+
+
+</head>
+<body>
+    <div id="map"></div>
+    <div id="lchart"></div>
+<script>
+const bounds = [
+        [-122.66336, 10], // Southwest coordinates
+        [-60.250481, 50] // Northeast coordinates
+    ];
+
+    mapboxgl.accessToken = 'pk.eyJ1IjoianhmaXNobWFuIiwiYSI6ImNsdWVpN29jODF0YjUybWxkZ2RsOGtjengifQ.OKakP14_ptNDZqwmfwBb5w';
+    const map = new mapboxgl.Map({
+    container: 'map',       // container ID
+    center: [-74.5, 40],    // starting position [lng, lat]
+    zoom: .8,                 // starting zoom
+    maxBounds: bounds // Set the map's geographical boundaries.
+
+});
+
+                const f = d3.format(".2f")
+                
+                d3.csv("./SN_m_tot_V2.csv").then(data=>{
+                            let s_data = data.map(d=>{
+                                    return {
+                                        Year: d[0],
+                                        Month: d[1],
+                                        sunspotNumber: +d[3]
+                                    }
+                            })
+                        })
+                            console.log(s_data)
+
+</script>
+</body>
+</html>
