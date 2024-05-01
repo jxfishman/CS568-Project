@@ -300,9 +300,10 @@ d3.select("#select_month")
 
 //drop down event handlers
 function update_month(selectedGroup) {
-
+        console.log(selectedGroup)
         month_index = monthScale(selectedGroup)
-        let index = (year_index-start_year)*12 + month_index
+        console.log(month_index)
+        let index = (year_index-start_year)*12 + month_index - 1
         plot_wind(timeSeries[index]);
         color_sun(year_index, month_index)
         d3.select("#wdmonth")
@@ -312,7 +313,7 @@ function update_month(selectedGroup) {
  }  
 function update_year(selectedGroup) {
         year_index = parseInt(selectedGroup, 10)
-        let index = (year_index-start_year)*12 + month_index
+        let index = (year_index-start_year)*12 + month_index - 1
         d3.select("#wdyear")
             .text(d => {return selectedGroup})
         plot_wind(timeSeries[index]);
@@ -333,10 +334,10 @@ d3.select("#select_month").on("change", function(d) {
 //**********************************VECTOR FIELD*******************************************************************************************************************************
 
 let timeSeries = []
-const years = d3.range(start_year,stop_year)
+const years = d3.range(start_year,stop_year+1)
 let n = 0;
 //populate timeSeries array with file names
-for(let i = 0; i < stop_year - start_year; i++)
+for(let i = 0; i < (stop_year - start_year)+1; i++)
 {
     for(let j = 1; j<13; j++)
     {
