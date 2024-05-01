@@ -250,7 +250,7 @@ const  months= [
         "December"]
 
 
-const monthScale = d3.scaleOrdinal(months, d3.range(1,12));
+const monthScale = d3.scaleOrdinal(months, [1,12]);
 mapboxgl.accessToken = 'pk.eyJ1IjoianhmaXNobWFuIiwiYSI6ImNsdWVpN29jODF0YjUybWxkZ2RsOGtjengifQ.OKakP14_ptNDZqwmfwBb5w';
 const map = new mapboxgl.Map({
     container: 'map',      // container ID
