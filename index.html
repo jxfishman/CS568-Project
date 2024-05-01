@@ -1,210 +1,854 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-@ -48,4 +49,207 @@ const bounds = [
-
-</script>
-</body>
-=======
-<!DOCTYPE html>
-<html lang="en">
-<head>
     <meta charset="UTF-8">
     <title>Solar Cycles and El Nino Events</title>
     <style>
-        body { margin: 0; padding: 0; }
-        #map { position: absolute; top: 0; bottom: 0; width: 50%; height: 50% }
-    </style>
         
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="https://d3js.org/topojson.v1.min.js"></script>
-    <link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet">
-    <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
+        body{
+            background-color:rgb(196, 241, 255);
+           
+        }
+        #sun{
+            position: absolute;
+            top: 100px;
+            left:0px;
+            width:400px;
+            height:400px;
+            margin-left:0px;
+        }
+          
+        div{
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            color:blue;
+            margin-left: 0px;
+            margin-right: 0px;
+            margin-top: 0px;
+            margin-bottom: 0px;
+        }
+        #map {
+            position: relative;
+            top: 0;
+            left: 0;
+            width: 960px;
+            height: 600px;
+            margin-left:60px;
+            margin-top:5px;
+           
+        
+        }
+        #map_container{
+            position: absolute;
+            top: 175px;
+            left: 10px;
+            width: 960px;
+            height: 600px;
+            margin-left:60px;
+            margin-top:5px;
+            
+        }
+        
+        svg{      
+            width: 960px;
+            height: 300px; 
+            background-color: rgba(244, 243, 248, 0.123);
+            margin-left:60px;
+        
+        }
+        #datatable
+        {
+            color:blue
+        }
+        rect {
+            pointer-events: all;
+            fill-opacity: 0;
+            stroke-opacity: 0;
+            z-index: 1;
+        }
 
+        .tooltip {
+            position: absolute;
+            padding: 5px;
+            background-color: rgb(11, 40, 65);
+            color: white;
+            border: 2px solid white;
+            border-radius: 2px;
+            display: none;
+            opacity: .75;
+            font-size: 14px;
+          }
 
+        .tooltip-line {
+            stroke-opacity: 0.5;
+        } 
+       
+       .slider_svg{      
+            width: 960px;
+            height: 80px; 
+            background-color: #aeb6e0; 
+            margin-top: 20px;   
+        }
+       
+        .chart_title{
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            font-size: 32px;
+            color:blue;
+            margin-left: 60px;
+            margin-right: 60px;
+            margin-top: 20px;
+            margin-bottom: 5px;
+            display:block
+        }
+       
+        .page_title{
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            font-size: 56px;
+            color:blue;
+            margin-left: 60px;
+            margin-right: 60px;
+            margin-top: 20px;
+            margin-bottom: 5px
+        }
+        ul{
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: blue;
+        }
+
+        li{
+            float: left;
+            color: white;
+        }
+
+        table{
+            vertical-align:top;
+            text-align:left;
+            font-size:16px;
+            margin-left: 60px;
+
+        }
+        
+
+        
+
+   </style>
+   <script> src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.4.1/snap.svg-min.js"</script>
+   <script src="https://d3js.org/d3.v7.min.js"></script>
+   <script src="https://unpkg.com/d3-simple-slider"></script>
+   <script src="https://d3js.org/topojson.v1.min.js"></script>
+   <link href= "https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet">
+   <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
+   <script src ="https://cdn.jsdelivr.net/npm/@observablehq/stdlib@5.8.7/dist/stdlib.min.js"></script>
 </head>
 <body>
-    <div id="map"></div>
-    <div id="lchart"></div>
+    <div id = #pagecontainer>
+       
+        <div id = #headercontainer>
+            <div class = "page_title">El Nino vs Sunspot Cycles</div>
+        </div>
+        <div id="maincontainer">
+                    <div class = "chart_title">Upper Atmospheric Winds</div>
+                    <table>
+                        <tbody>
+                            <tr><td>Wind Data Year:</td><td id = "wdyear"></td>
+                            <td>Wind Data Month:</td><td id = "wdmonth"></td><td>Merra Data File Name:</td><td id = "wdmerra"></td></tr>
+                        </tbody>
+                    </table>
+                    </div>
+                    <div id="vectorplot">
+                    <div id="map"></div>
+                    <div id="sun"></div>
+                    <div><svg id = "map_container" viewBox="0 0 960 600" width="100vw" height="100vh"></svg></div>
+                    <div style="margin-left: 60px; width: 960px">The jet stream corresponds to the high speed winds shown in dark blue. (Data: MERRA-2 )
+                    The sun color corresponds to sunspot levels for the specified year and month.  An oranger sun indicates more solar activity during that month and year.</div>
+                    <br>
+                    <div style="margin-left: 60px;">Select year and month of visualization</div>
+                    <div id="controls" style="margin-left: 60px; width:960px">
+                        <ul>
+                            <li>
+                                Year:
+                                <select id = "select_year"></select>  
+                            </li>
+                            <li>
+                                Month:
+                                <select id = "select_month"></select>
+                            <br/>
+                            </li>
+                        </ul>
+                    </div>
+            <div>
+                <div class = "chart_title">Sunspot Cycles</div>
+                <div id="lchart"></div>
+                <div id ="chart1source">Data: SILSO Monthly Mean Total Sunspot Number dataset</div>
+                <div class = "chart_title">Ocean Temperature Oscillations - El Nino Indicator</div>
+                <div id="lchart2" style="background-image:url(#sun)"></div>
+                <div id="chart2source">Data: National Weather Service Climate Prediction Center NOAA Extended Reconstructed Sea Surface Temperature V5 dataset</div>
+                <div style="margin-left: 60px;">Temperature change of more than 0.5 degrees indicates an El Nino condition</div>
+                <div id="slider-range"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
 <script>
+//Add colors to make the gradient appear like a Sun
+let sun = d3.select("#sun").append("svg");
+//Append a defs (for definition) element to your SVG
+let sundefs = sun.append("defs");
+const container = sun.append('g')
+  .attr('transform', `translate(${0 + 300/2},${0 + 400/2})`);
+//Append a radialGradient element to the defs and give it a unique id
+var radialGradient = sundefs.append("radialGradient")
+    .attr("id", "radial-gradient")
+    .attr("cx", "50%")    //The x-center of the gradient
+    .attr("cy", "50%")    //The y-center of the gradient
+    .attr("r", "50%");   //The radius of the gradient
+radialGradient.append("stop")
+    .attr("offset", "0%")
+    .attr("stop-color", "#FFF76B");
+radialGradient.append("stop")
+    .attr("offset", "50%")
+    .attr("stop-color", "#FFF845");
+radialGradient.append("stop")
+    .attr("offset", "90%")
+    .attr("stop-color", "#FFDA4E");
+radialGradient.append("stop")
+    .attr("offset", "100%")
+    .attr("stop-color", "#FB8933");
+
+//Apply to a circle by referencing its unique id in the fill
+container.append("circle")
+    .attr("r", 100)
+    .attr("id", "sun_circle")
+    .style("fill", "url(#radial-gradient)")
+    .attr("cx", 0)
+    .attr("cy", 0)
+
+
+//set bounds so coordinates match coordinate range of data, zoom is set so map displays at bounds
 const bounds = [
-        [-122.66336, 10], // Southwest coordinates
-        [-60.250481, 50] // Northeast coordinates
+        [-160, 0], // Southwest coordinates
+        [-50, 50] // Northeast coordinates
+       
     ];
+const margin = 60;
+const  months= [
+         "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"]
 
-    mapboxgl.accessToken = 'pk.eyJ1IjoianhmaXNobWFuIiwiYSI6ImNsdWVpN29jODF0YjUybWxkZ2RsOGtjengifQ.OKakP14_ptNDZqwmfwBb5w';
-    const map = new mapboxgl.Map({
-    container: 'map',       // container ID
-    center: [-74.5, 40],    // starting position [lng, lat]
-    zoom: .8,                 // starting zoom
-    maxBounds: bounds // Set the map's geographical boundaries.
 
+const monthScale = d3.scaleOrdinal(months, d3.range(1,13));
+mapboxgl.accessToken = 'pk.eyJ1IjoianhmaXNobWFuIiwiYSI6ImNsdWVpN29jODF0YjUybWxkZ2RsOGtjengifQ.OKakP14_ptNDZqwmfwBb5w';
+const map = new mapboxgl.Map({
+    container: 'map',      // container ID
+    center: [-105, 30],    // starting position [lng, lat]
+    zoom: 1,               // starting zoom set to align map geography with svg coordinates, zooming in an out is not supported
+    maxBounds: bounds,     // the map's geographical boundaries.
+    projection: 'mercator',
+    style: 'mapbox://styles/mapbox/light-v11'
 });
+
+
+let datayears = [];
+let monthMap = {};
+let start_year = 2007;
+let stop_year = 2023;
+let year_index = 2007;
+let month_index = 1;
+
+//Populate arrays used to map month name to month number and year string to year number
+for(let w = 0; w<12; w++)
+{
+        monthMap[`${months[w]}`] = w + 1
+}
+for(let k=0,w = start_year; w<stop_year+1; w++,k++)
+{
+        datayears[k] = `${w}`
+}
+
+//configure dropdown selectors
+d3.select("#select_year")
+    .on('change', () => update_year())
+    .selectAll('option')
+    .data(datayears)
+    .enter()
+    .append('option')
+    .attr('value', d => {return d;})
+    .text(d => {return d;})
+
+d3.select("#select_month")
+    .on('change', () => update_month())
+    .selectAll('option')
+    .data(months)
+    .enter()
+    .append('option')
+    .attr('value', d => {return d;})
+    .text(d => {return d;})
+
+//drop down event handlers
+function update_month(selectedGroup) {
+
+        month_index = monthScale(selectedGroup)
+        let index = (year_index-start_year)*12 + month_index
+        plot_wind(timeSeries[index]);
+        color_sun(year_index, month_index)
+        d3.select("#wdmonth")
+            .text(d => {return selectedGroup})
+        d3.select("#wdmerra")
+         .text(d => {return timeSeries[index]})
+ }  
+function update_year(selectedGroup) {
+        year_index = parseInt(selectedGroup, 10)
+        let index = (year_index-start_year)*12 + month_index
+        d3.select("#wdyear")
+            .text(d => {return selectedGroup})
+        plot_wind(timeSeries[index]);
+        color_sun(year_index, month_index)
+        d3.select("#wdmerra")
+         .text(d => {return timeSeries[index]})
+
+}
+d3.select("#select_year").on("change", function(d) {
+        let selectedOption = d3.select(this).property("value")
+         update_year(selectedOption)
+})
+d3.select("#select_month").on("change", function(d) {
+        let selectedOption = d3.select(this).property("value")
+        update_month(selectedOption)
+})
+
+//**********************************VECTOR FIELD*******************************************************************************************************************************
+
+let timeSeries = []
+const years = d3.range(start_year,stop_year)
+let n = 0;
+//populate timeSeries array with file names
+for(let i = 0; i < stop_year - start_year; i++)
+{
+    for(let j = 1; j<13; j++)
+    {
+        if(j<10)
+            timeSeries[n] = `../timeSeries/merra_data${years[i]}0${j}.json`
+        else
+            timeSeries[n] = `../timeSeries/merra_data${years[i]}${j}.json`
+        n++
+    }
+}
+
+//create custom svg for vector field arrow symbol
+customSymbolPath = "M 0,0 L 20,0 L 20,-4 L 30,0.5 L 20,3 L 20,1 L 0,1 L 0,0"
+//dimensions of vector field
+const width  = 960;
+const height = 600;
+
+//initial plot of vector field
+plot_wind(timeSeries[0])
+
+//vector field generator function
+function plot_wind(fileName)
+{
+
+  d3.json(fileName).then(data_loaded=>{
+        const data = data_loaded;
+        
+        let latdata = [];
+        let londata = [];
+        let winddata = [];    
+        let winddir = [];
+
+        data.forEach(function(d,i) {
+                    
+                  latdata[i] = d.lat;
+                  londata[i] = d.lon;
+                  winddata[i] = d.wind_speed;
+                  winddir[i] = d.wind_direction
+        })
+        let extent_wind = d3.extent(winddata)
+
+        const windSpeedScale =  d3.scaleLinear().domain(d3.extent(winddata)).range([1,3])
+        const speedColorScale = d3.scaleLinear().domain(d3.extent(winddata)).range([0,1])
+        const latScale = d3.scaleLinear()
+            .domain(d3.extent(latdata,d=>+d))
+            .range([height, 0])
+
+        const lonScale = d3.scaleLinear()
+            .domain(d3.extent(londata,d=>+d))
+            .range([0,width])
+        
+        const map_svg = d3.select("#map_container")
+
+        map_svg.selectAll(".locations").remove();
+        let locations = map_svg.append('g').attr("class","locations");
+           
+        for(let i=0;i<londata.length;i+=10) {
+            locations
+                .append("g").attr("transform",`translate(${lonScale(londata[i])},${latScale(latdata[i])})`)
+                .call(getGlyph,i)
+                
+        }
+
+        function getGlyph(selection,i){
+            return glyphGen(selection,winddata[i]/5,winddir[i],d3.interpolateYlGnBu(speedColorScale(winddata[i])),windSpeedScale(winddata[i]))
+        }
+
+       
+    })
+}
+function glyphGen(container,dimension,rotation,color,glyphLen=3){
+        const glyph_shape = customSymbolPath;
+        const glyph = container.append("g")
+        .attr("transform", `rotate(${-1*rotation*360/Math.PI},0,0)`)     //positive data angles cause clockwise rotation, so multiply by -1 to get counter-clockwise rotation 
+        .selectAll('.Gl')
+        .data(d3.range(2))
+        .join("g")
+        .append("path")
+        .attr("d",glyph_shape)
+        .attr("fill", color)
+        .attr("fill-opacity",0.8)
+ }
+
+
+let frameNumber = 0;
+    function frame(){
+       // d3.select("#time").text(Month_Year[frameNubmer]);
+        if(frameNumber>=timeSeries.length-1){
+            frameNumber=0
+        }
+        else{
+            frameNumber++;
+        }
+        
+     //   d3.timer((d)=>{map_svg.selectAll("*").remove()},100)
+        plot_wind(timeSeries[frameNumber]);
+    }
+//d3.interval(frame,1000);
+
+//function to change color of the sun depending on year selected
+function color_sun(year_index, month_index)
+{
+
+        d3.dsv(";", url, (d) => {
+        return {
+        
+                Year: d.Year,
+                Month: d.Month,
+                sunspotNumber: +d.Mean                                
+        }
+        }).then(d=>{
+
+        let s_data = d3.map(d, (d)=>{
+
+        return{ 
+                Date: d3.timeParse("%m/%d/%Y")(d.Month + '/01/' + d.Year),
+                sunspotNumber: +d.sunspotNumber
+               }
+        })
+        let max = d3.max(s_data, function(d){return d.sunspotNumber})
+        let min = d3.min(s_data, function(d){return d.sunspotNumber})
+        const sunColorScale = d3.scaleLinear().domain([min, max]).range([0,1])
+        console.log(s_data)
+        let selected_date = d3.timeParse("%m/%d/%Y")(month_index + '/01/' + year_index)
+        console.log(selected_date)
+        let result = s_data.find(function(d) {
+          return d.Date.getTime() == selected_date.getTime()})
+        sunspotNumber = result.sunspotNumber     
+        d3.select("#sun_circle")
+            .style("fill", d3.interpolateYlOrRd(sunColorScale(sunspotNumber)))
+    })
+
+}
+
+//***********************************************************First Chart********************************************************************************************************
+const ch_width = 960 - margin;
+const ch_height = 300 - margin;
 
 const f = d3.format(".2f")
 const url = "https://raw.githubusercontent.com/jxfishman/CS568-Project/main/SN_m_tot_V2%20.csv"
-             
+
+//tooltip div for value
+const tooltipValue_1 = d3.select("body")
+     .append("div")
+     .attr("class", "tooltip");
+
+//tooltip div for date
+const tooltipDate_1 = d3.select("body")
+     .append("div")
+     .attr("class", "tooltip");
+
+//load data, ; delimited
 d3.dsv(";", url, (d) => {
     return {
         
                 Year: d.Year,
                 Month: d.Month,
-                sunspotNumber: +d.Mean
-                
-                       
+                sunspotNumber: +d.Mean                                
     }
+ }).then(d=>{
+
+let s_data = d3.map(d, (d)=>{
+
+        return{ 
+                Date: d3.timeParse("%m/%d/%Y")(d.Month + '/01/' + d.Year),
+                sunspotNumber: +d.sunspotNumber
+               }
+})
+
+//svg for line chart
+    let svg = d3.select("#lchart").append("svg");
+    let max = d3.max(s_data, function(d){return d.sunspotNumber})
+    let min = d3.min(s_data, function(d){return d.sunspotNumber})
+
+//configure axes
+    const xScale1 = d3.scaleTime().domain(d3.extent(s_data, d=>d['Date'])).range([margin, ch_width]);
+    const yScale1 = d3.scaleLinear().domain([min, max]).range([ch_height, margin]);
+    
+
+    
+    
+
+    const xAxis = d3.axisBottom().scale(xScale1);
+    const yAxis = d3.axisLeft().scale(yScale1); 
+    
+    svg.append("g")
+    .attr("class", "x-axis1")
+    .attr("transform", `translate(0,260)`).call(xAxis)
+    .style("font-size", "14px")
+    .selectAll(".tick line")
+    .style("stroke-opacity", 1)
+    .selectAll(".tick text")
+    .attr("fill", "#FFFFFF");
+
+    svg.append("g")
+    .attr("class", "y-axis1")
+    .attr("transform", `translate(${0+margin},0)`).call(yAxis)
+    .style("font-size", "14px")
+    .selectAll(".tick line")
+    .style("stroke-opacity", 1)
+    .selectAll(".tick text")
+    .attr("fill", "#FFFFFF");
+
+//create line for sunspotNumber
+    let line1 = d3.line()
+        .x(d=>xScale1(d.Date))
+        .y(d=>yScale1(d.sunspotNumber))
+
+ //link each line to a path element on svg   
+    svg.append("path")
+        .datum(s_data) 
+        .attr("class", "line1") 
+        .attr("fill", "none")
+        .attr("stroke", d3.schemeCategory10[0])
+        .attr("stroke-width", 1.5)
+        .attr("d", line1);
+
+// tooltip components
+  const circle_1 = svg.append("circle")
+    .attr("r", 0)
+    .attr("fill", "blue")
+    .style("stroke", "white")
+    .attr("opacity", 0.3)
+    .style("pointer-events", "none");
+   
+  const tooltipLineX_1 = svg.append("line")
+    .attr("class", "tooltip-line")
+    .attr("id", "tooltip-line-x")
+    .attr("stroke", "red")
+    .attr("stroke-width", 1)
+    .attr("stroke-dasharray", "2,2");
+
+const tooltipLineY_1 = svg.append("line")
+    .attr("class", "tooltip-line")
+    .attr("id", "tooltip-line-y")
+    .attr("stroke", "red")
+    .attr("stroke-width", 1)
+    .attr("stroke-dasharray", "2,2");
+
+
+
+
+
+//*********************************************************************************Chart 2*****************************************************************
+//tooltip div for value
+const tooltipValue = d3.select("body")
+  .append("div")
+  .attr("class", "tooltip");
+
+//tooltip div for data
+const tooltipDate = d3.select("body")
+  .append("div")
+  .attr("class", "tooltip");
+
+d3.csv("https://raw.githubusercontent.com/jxfishman/CS568-Project/main/temperature_episodes_w_c.csv", (d) => {
+    return {
+        
+                Year: d.Year,
+                Month: d.Month,
+                Value: +d.Value
+           }
     
 }).then(d=>{
 
+//Convert month names to month numbers
+d.forEach(function(d) {
+    d.Month = monthMap[d.Month];
+});
 
-    console.log(d);
-//svg for line chart
-    let svg = d3.select("body").append("svg");
+//format dates
+let t_data = d3.map(d, (d)=>{
+    return{ 
+    Date: d3.timeParse("%m/%d/%Y")(d.Month + '/01/' + d.Year),
+    Value: +d.Value
+    }
+})
 
-    const margin = 60;
+//svg for second line chart
+let svg2 = d3.select("#lchart2").append("svg");
 
-   /* let max0 = d[0].sunspotNumber;
-    let min0 = d[0].sunspotNumber;
-    let max = max0;
-    let min = min0;
+//configure axes 
+let max2 = d3.max(t_data, d =>{return d.Value})
+let min2 = d3.min(t_data, d =>{return d.Value})
+const xScale2 = d3.scaleTime().range([margin, ch_width]);
+const yScale2 = d3.scaleLinear().range([ch_height, margin]);
+xScale2.domain(d3.extent(t_data, d => d.Date));
+yScale2.domain([min2, max2]);
+const xAxis2 = d3.axisBottom().scale(xScale2)
+    .tickValues(xScale2.ticks(d3.timeYear.every(10)))
+    .tickFormat(d3.timeFormat("%Y"))
+const yAxis2 = d3.axisLeft().scale(yScale2); 
 
-    //Identify maximum and minimum data values in data array so that axes are properly scaled for all lines
-let keys = [ 'EstimatedCost', 'ActualCost', 'SoldPrice', 'MarginOfProfit']
-for (var j = 0; j < d.length; j++)
-{
-          max = d3.max(f_data, function(d) { return +d[keys[j]];} );
-          min = d3.min(f_data, function(d) { return +d[keys[j]];} );
-          if (max > max0) max0 =  max;
-          if (min < min0) min0 =  min;                               
-}*/
+svg2.append("g")
+    .attr("class", "x-axis")
+    .attr("transform", `translate(0,260)`).call(xAxis2)
+    .style("font-size", "14px")
+    .selectAll(".tick line")
+    .style("stroke-opacity", 1)
+    .selectAll(".tick text")
+    .attr("fill", "#FFFFFF");
 
-    let max = d3.max(d)
-    console.log(max)
-/*
-//configure axes and color
-const xScale = d3.scaleTime().domain(d3.extent(f_data, d=>d['Date'])).range([0 + margin, 1000-margin]);
-const yScale = d3.scaleLinear().domain([min0, max0]).range([800 - margin, 0 + margin]);
-
-const xAxis = d3.axisBottom().scale(xScale);
-const yAxis = d3.axisLeft().scale(yScale); 
-svg.append("g").attr("transform", `translate(0, ${800-margin})`).call(xAxis);
-svg.append("g").attr("transform", `translate(${0+margin},0)`).call(yAxis);
-let color = d3.scaleOrdinal().domain(keys).range(d3.schemeCategory10);
-
-
-//create lines from required columns
-let line1 = d3.line()
-    .x(d=>xScale(d.Date))
-    .y(d=>yScale(d.EstimatedCost))
-    
+svg2.append("g")
+    .attr("class", "y-axis")
+    .attr("transform", `translate(${0+margin},0)`).call(yAxis2)
+    .style("font-size", "14px")
+    .selectAll(".tick line")
+    .style("stroke-opacity", 1)
+    .selectAll(".tick text")
+    .attr("fill", "#FFFFFF");
 
 let line2 = d3.line()
-    .x(d=>xScale(d.Date))
-    .y(d=>yScale(d.ActualCost))
+    .x(t_data=>xScale2(t_data.Date))
+    .y(t_data=>yScale2(t_data.Value))
 
-let line3 = d3.line()
-    .x(d=>xScale(d.Date))
-    .y(d=>yScale(d.SoldPrice))
-
-let line4 = d3.line()
-    .x(d=>xScale(d.Date))
-    .y(d=>yScale(d.MarginOfProfit))
-
- //link each line to a path element on the svg   
-svg.append("path")
-    .datum(f_data) 
-    .attr("class", "line") 
-    .attr("fill", "none")
-    .attr("stroke", d3.schemeCategory10[0])
-    .attr("stroke-width", 1.5)
-    .attr("d", line1);
-
-svg.append("path")
-    .datum(f_data) 
-    .attr("class", "line") 
-    .attr("fill", "none")
-    .attr("stroke", d3.schemeCategory10[1])
-    .attr("stroke-width", 1.5)
-    .attr("d", line2);
-
-svg.append("path")
-    .datum(f_data) 
-    .attr("class", "line") 
-    .attr("fill", "none")
-    .attr("stroke", d3.schemeCategory10[2])
-    .attr("stroke-width", 1.5)
-    .attr("d", line3);
-
-svg.append("path")
-    .datum(f_data) 
-    .attr("class", "line") 
-    .attr("fill", "none")
-    .attr("stroke", d3.schemeCategory10[3])
-    .attr("stroke-width", 1.5)
-    .attr("d", line4);
+  // const color = d3.scaleQuantize(yScale2.domain(), ["blue", "red"]);
     
-   
-//create the legend
-let newKeys = [ 'Estimated Cost', 'Actual Cost', 'Sold Price', 'Margin of Profit']
-svg.selectAll('legend_lines')
-    .data(keys)
-    .enter()
-    .append('line')
-    .attr('x1', 830)
-    .attr('y1', function(d,i){ return 40 + i*25})
-    .attr('x2', 900)
-    .attr('y2', function(d,i){ return 40 + i*25})
-    .style("stroke", function(d){ return color(d)})
-    .style("stroke-width", 3);
+   let  defs = svg2.append("defs");
+   let lGradient=defs.append("linearGradient")
+      .attr("id", "gradientid")
+      .attr("gradientUnits", "userSpaceOnUse")
+      .attr("x1", 0)
+      .attr("y1", yScale2(0))
+      .attr("x2", 0)
+      .attr("y2", yScale2(0.5))
+      .selectAll("stop")
+      .data(
+             [
+               {offset: "100%", color: "blue"},
+               {offset: "100%", color: "red"},
+             ]
+             )
+             .enter().append("stop")
+                        .attr("offset", function(d) { return d.offset; })
+                        .attr("stop-color", function(d) { return d.color; });
 
+
+//link line to a path element on the svg   
+svg2.append("path")
+    .datum(t_data) 
+    .attr("class", "line2") 
+    .attr("fill", "none")
+    .attr("stroke", "url(#gradientid)")
+    .attr("stroke-width", 1.5)
+    .attr("d", line2)
+ 
+// tooltip components
+  const circle = svg2.append("circle")
+    .attr("r", 0)
+    .attr("fill", "blue")
+    .style("stroke", "white")
+    .attr("opacity", 0.3)
+    .style("pointer-events", "none");
    
-svg.selectAll("legend_labels")
-    .data(newKeys)
-    .enter()
-    .append("text")
-    .attr("x", 720)
-    .attr("y", function(d,i){ return 40 + i*25}) 
-    .style("fill", d3.schemeCategory10[0])
-    .text(function(d){ return d})
-    .attr("text-anchor", "left")
-    .style("alignment-baseline", "middle");
+  const tooltipLineX = svg2.append("line")
+    .attr("class", "tooltip-line")
+    .attr("id", "tooltip-line-x")
+    .attr("stroke", "red")
+    .attr("stroke-width", 1)
+    .attr("stroke-dasharray", "2,2");
+
+const tooltipLineY = svg2.append("line")
+    .attr("class", "tooltip-line")
+    .attr("id", "tooltip-line-y")
+    .attr("stroke", "red")
+    .attr("stroke-width", 1)
+    .attr("stroke-dasharray", "2,2");
+
+
+// Slider
+const slider2 = d3.select('#slider-range')
+    .append('svg')
+    .attr('width', 500)
+    .attr('height', 100)
+    .attr('class', 'slider_svg')
+    .append('g')
+    .attr('transform', 'translate(90,30)');
+
+
+ 
+//**************************************************************************Tool Tip Events****************************************************************************
+
+// event listener
+const listener2 = svg2.append("rect")
+  .attr("width", ch_width)
+  .attr("height", ch_height);
+
+// mouse move event handler
+listener2.on("mousemove", function (event) {
+    const [xCoord] = d3.pointer(event, this);
+    const bisectDate = d3.bisector(d => d.Date).left;
+
+    const x0_1 = xScale1.invert(xCoord);
+    const x0 = xScale2.invert(xCoord);
+
+    const i_1 = bisectDate(s_data, x0_1, 1);
+    const i = bisectDate(t_data, x0, 1);
+    
+    const d0_1 = s_data[i_1 - 1];
+    const d1_1 = s_data[i_1];
+    const d0 = t_data[i - 1];
+    const d1 = t_data[i];
+
+    const d_1 = x0_1 - d0_1.Date > d1_1.Date - x0_1 ? d1_1 : d0_1
+    const d = x0 - d0.Date > d1.Date - x0 ? d1 : d0;
+
+    const xPos_1 = xScale1(d_1.Date);
+    const yPos_1 = yScale1(d_1.sunspotNumber);
+
+    const xPos = xScale2(d.Date);
+    const yPos = yScale2(d.Value);
+
+    // UpDate the circle position
+    circle_1.attr("cx", xPos_1).attr("cy", yPos_1);
+    circle.attr("cx", xPos).attr("cy", yPos);
+
+    // Add transition for the circle radius
+    circle_1.transition()
+        .duration(50)
+    .attr("r", 5);
+    circle.transition()
+        .duration(50)
+    .attr("r", 5);
+
+     // crosshairs
+    tooltipLineX_1.style("display", "block").attr("x1", xPos_1).attr("x2", xPos_1).attr("y1", 0).attr("y2", ch_height);
+    tooltipLineY_1.style("display", "block").attr("y1", yPos_1).attr("y2", yPos_1).attr("x1", 0).attr("x2", ch_width);
+    tooltipLineX.style("display", "block").attr("x1", xPos).attr("x2", xPos).attr("y1", 0).attr("y2", ch_height);
+    tooltipLineY.style("display", "block").attr("y1", yPos).attr("y2", yPos).attr("x1", 0).attr("x2", ch_width);
+
+
+    //tooltips
+    tooltipDate_1.style("left", `${xPos_1 + 60}px`)
+    .style("top", `${900 + 53}px`)
+    .style("display", "block")
+    .html(`${d.Date !== undefined ? d.Date.toISOString().slice(0, 10) : 'N/A'}`);
+    tooltipValue_1.style("left", `${xPos_1 + 60}px`)
+    .style("top", `${900}px`)
+    .style("display", "block")
+    .html(`${d_1.sunspotNumber !== undefined ? d_1.sunspotNumber.toFixed(2) : 'N/A'}`);
+   
+    tooltipDate.style("left", `${xPos + 60}px`)
+    .style("top", `${1300 + 53}px`)
+    .style("display", "block")
+    .html(`${d.Date !== undefined ? d.Date.toISOString().slice(0, 10) : 'N/A'}`);
+    tooltipValue.style("left", `${xPos + 60}px`)
+    .style("top", `${1300}px`)
+    .style("display", "block")
+    .html(`${d.Value !== undefined ? d.Value.toFixed(2) : 'N/A'}`);
+   });
+
+//Slider
+const sliderRange = d3
+    .sliderBottom()
+    .min(d3.min(s_data, d => d.Date))
+    .max(d3.max(s_data, d => d.Date))
+    .width(300)
+    .tickFormat(d3.timeFormat('%Y-%m-%d'))
+    .ticks(3)
+    .default([d3.min(s_data, d => d.Date), d3.max(s_data, d => d.Date)])
+    .fill('#0000FF');
+
+slider2.call(sliderRange);
+
+sliderRange.on('onchange', val => {
+    xScale1.domain(val);
+    const f_data1 = s_data.filter(d => d.Date >= val[0] && d.Date <= val[1]);
+    xScale2.domain(val);
+    const f_data2 = t_data.filter(d => d.Date >= val[0] && d.Date <= val[1]);
+    let yearScale = d3.scaleQuantize(val, [1, 2, 4]);
+
+    svg.select(".line1").attr("d", line1(f_data1));
+    yScale1.domain([d3.min(f_data1, d => d.sunspotNumber), d3.max(f_data1, d => d.sunspotNumber)]);
+    let maxval1 = d3.max(f_data1,d => d.sunspotNumber)
+
+    svg2.select(".line2").attr("d", line2(f_data2));
+    yScale2.domain([d3.min(f_data2, d => d.Value), d3.max(f_data2, d => d.Value)]);
+    let maxval2 = d3.max(f_data2,d => d.Value)
+   
+     // update x-axis chart 1
+    svg.select(".x-axis1")
+      .transition()
+      .duration(300) 
+      .call(d3.axisBottom(xScale1)
+                        .tickValues(xScale1.ticks(d3.timeYear.every(10)))
+                        .tickFormat(d3.timeFormat("%Y")));
+
+     // update y-axis chart 1
+    svg.select(".y-axis1")
+      .transition()
+      .duration(300) 
+      .call(d3.axisLeft(yScale1)
+                    .ticks(10)
+                    .tickFormat(d => {return `${d.toFixed(2)}`;}));
+    
+    // update x-axis chart 2
+    svg2.select(".x-axis")
+     .transition()
+      .duration(300) 
+      .call(d3.axisBottom(xScale2)
+                    .tickValues(xScale2.ticks(d3.timeYear.every(10)))
+                    .tickFormat(d3.timeFormat("%Y")));
+
+     // update y-axis chart 2
+    svg2.select(".y-axis")
+      .transition()
+      .duration(300) 
+      .call(d3.axisLeft(yScale2)
+                    .ticks(10)
+                    .tickFormat(d => {return `${d.toFixed(2)}`;}));
+    });
 })
 
-
-
-
-
-
-
-
-
-
-
-
-
 })
-
-
-
-
-   let s_data = d.map(d=>{
-                return {
-                          Year: d['Year'],
-                          Month: d['Month'],
-                          sunspotNumber: +d[Mean]
-                       }
-    })
-    
-    console.log(s_data)
-
-})*/
-               
-
-})               
-                
-
-                
 
 </script>
-</body>
-</html>
