@@ -342,10 +342,10 @@ for(let i = 0; i < stop_year - start_year; i++)
     {
         if(j<10)
          // timeSeries[n] = `../timeSeries/merra_data${years[i]}0${j}.json`
-        {  timeSeries[n] = "https://raw.githubusercontent.com/jxfishman/CS568-Project/main/timeSeries/merra_data${years[i]}0${j}.json"}
+        {  timeSeries[n] = `https://raw.githubusercontent.com/jxfishman/CS568-Project/main/timeSeries/merra_data${years[i]}0${j}.json`}
         else
         //  timeSeries[n] = `../timeSeries/merra_data${years[i]}${j}.json`
-        { timeSeries[n] = "https://raw.githubusercontent.com/jxfishman/CS568-Project/main/timeSeries/merra_data${years[i]}${j}.json"}
+        { timeSeries[n] = `https://raw.githubusercontent.com/jxfishman/CS568-Project/main/timeSeries/merra_data${years[i]}${j}.json`}
         n++
     }
 }
