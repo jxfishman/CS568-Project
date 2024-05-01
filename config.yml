@@ -1,0 +1,6 @@
+name: My Site
+theme: minima
+include:  
+- "*_*.json"  
+- "SN_m_tot_V2.csv"
+- "temperature_episodes_w_c.csv"
